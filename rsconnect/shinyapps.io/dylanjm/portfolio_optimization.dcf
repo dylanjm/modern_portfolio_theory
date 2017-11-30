@@ -1,0 +1,12 @@
+name: portfolio_optimization
+title: portfolio_optimization
+username:
+account: dylanjm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 242029
+bundleId: 1106461
+url: https://dylanjm.shinyapps.io/portfolio_optimization/
+when: 1512052272.66807
+asMultiple: FALSE
+asStatic: FALSE
