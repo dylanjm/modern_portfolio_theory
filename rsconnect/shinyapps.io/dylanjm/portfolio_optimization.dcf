@@ -5,8 +5,8 @@ account: dylanjm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 242029
-bundleId: 1106461
+bundleId: 1107050
 url: https://dylanjm.shinyapps.io/portfolio_optimization/
-when: 1512052272.66807
+when: 1512071140.86058
 asMultiple: FALSE
 asStatic: FALSE

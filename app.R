@@ -79,7 +79,7 @@ font-style: italic;} "))),
                   modern portfolio theory and risk adjusted returns.",
                   class = "about"),
          br(), br(),
-         tags$div(tags$a(href = "https://dylanjm.github.io/",
+         tags$div(tags$a(href = "https://github.com/dylanjm/modern_portfolio_theory/blob/master/app.R",
                          tags$small(tags$em("Dylan McDowell - 2017"))), br(),
                   tags$a(href = "https://creativecommons.org/licenses/by/4.0/",
                          tags$small(tags$em("liscensed under "), icon("creative-commons"))),
@@ -99,7 +99,7 @@ font-style: italic;} "))),
                               dataTableOutput("annual"),
                               dataTableOutput("capm")),
           tabPanel("Data", dataTableOutput("stocktab")),
-          tabPanel("Info")
+          tabPanel("Info", "Coming Soon...")
         ),
         width = 9
       )
@@ -158,7 +158,7 @@ server <- function(input, output) {
                    col_rename  = "Ra")
     
     RaRb.multiple.portfolio <- portfolio.sim.monthly
-    
+    print(RaRb.multiple.portfolio)
     test <- RaRb.multiple.portfolio %>%
       tq_performance(Ra = Ra, Rb = NULL, performance_fun = table.AnnualizedReturns) %>%
       rename("Returns" = "AnnualizedReturn", "Standard Deviation" = "AnnualizedStdDev", 
@@ -188,15 +188,17 @@ server <- function(input, output) {
                 caption = htmltools::tags$caption(htmltools::h4('Max Sharpe Ratio Portfolio')),
                 style = 'bootstrap',
                 options = list(dom = 't', autoWidth = TRUE)) %>%
-        formatPercentage(1:ncol(test.full), digits = 3) %>%
-        formatSignif(c("portfolio", "SR"), digits = 3)
+        formatPercentage(c(2, 4:ncol(test.full)), digits = 2) %>%
+        formatSignif("SR", digits = 2)
     })
     
     output$minvar <- renderDataTable({
       datatable(test.full[which.min(test.full$`Standard Deviation`),],rownames = FALSE,
                 caption = htmltools::tags$caption(htmltools::h4('Minimum Variance Portfolio')),
                 style = 'bootstrap',
-                options = list(dom = 't', autoWidth = TRUE))
+                options = list(dom = 't', autoWidth = TRUE)) %>%
+        formatPercentage(c(2, 4:ncol(test.full)), digits = 2) %>%
+        formatSignif("SR", digits = 2)
     })
     
     })
@@ -226,8 +228,8 @@ server <- function(input, output) {
                 colnames = c("Symbol", "Geometric Mean", "Std. Dev", 
                              "Skew", "Kurtosis", "Min", "Max", "Sharpe Ratio"),
                 options = list(dom = 't', autoWidth = TRUE)) %>%
-        formatPercentage(c('GeometricMean','Stdev','Minimum','Maximum'), 3) %>%
-        formatSignif("StdDevSharpe(Rf=0%,p=95%)", digits = 3)
+        formatPercentage(c('GeometricMean','Stdev','Minimum','Maximum'), 2) %>%
+        formatSignif("StdDevSharpe(Rf=0%,p=95%)", digits = 2)
     })
     
     output$annual <- renderDataTable({
@@ -236,8 +238,8 @@ server <- function(input, output) {
                 style = 'bootstrap',
                 colnames = c("Annualized Returns", "Annualized Std Dev", "Sharpe Ratio"),
                 options = list(dom = 't', autoWidth = TRUE)) %>%
-        formatPercentage(c("AnnualizedReturn","AnnualizedStdDev"), 3) %>%
-        formatSignif("AnnualizedSharpe(Rf=0%)", digits = 3)
+        formatPercentage(c("AnnualizedReturn","AnnualizedStdDev"), 2) %>%
+        formatSignif("AnnualizedSharpe(Rf=0%)", digits = 2)
     })
     
     output$capm <- renderDataTable({
@@ -258,12 +260,14 @@ server <- function(input, output) {
     })
     
     output$stocktab <- renderDataTable({
-      datatable(stock.data, rownames = FALSE,
+      stock.data <- stock.data %>%
+        spread(key="symbol", value = "adjusted") %>%
+        
+      datatable(rownames = FALSE,
                 filter = 'top',
-                colnames = c("Ticker", "Date", "Adjusted"),
                 style = 'bootstrap',
                 options = list(dom = 'ltp', autoWidth = TRUE)) %>%
-        formatCurrency("adjusted", "$")
+        formatCurrency(2:ncol(stock.data), "$")
     })
     
   })
